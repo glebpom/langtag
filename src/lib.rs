@@ -496,6 +496,45 @@ impl FromStr for LanguageTagBuf {
 	}
 }
 
+#[cfg(feature = "serde")]
+impl serde::Serialize for LanguageTagBuf {
+	fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+	where
+		S: serde::Serializer,
+	{
+		serializer.serialize_str(self.as_str())
+	}
+}
+
+#[cfg(feature = "serde")]
+struct LanguageTagBufVisitor;
+
+#[cfg(feature = "serde")]
+impl<'de> serde::de::Visitor<'de> for LanguageTagBufVisitor {
+	type Value = LanguageTagBuf;
+
+	fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+		write!(formatter, "language tag")
+	}
+
+	fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+	where
+		E: serde::de::Error,
+	{
+		LanguageTagBuf::parse_copy(v).map_err(|e| E::custom(e.to_string()))
+	}
+}
+
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for LanguageTagBuf {
+	fn deserialize<D>(deserializer: D) -> Result<LanguageTagBuf, D::Error>
+	where
+		D: serde::Deserializer<'de>,
+	{
+		deserializer.deserialize_str(LanguageTagBufVisitor)
+	}
+}
+
 macro_rules! language_tag_impl {
 	() => {
 		/// Returns the bytes representation of the language tag.
