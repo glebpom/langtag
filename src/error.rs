@@ -1,4 +1,4 @@
-use std::fmt;
+use std::{error, fmt};
 
 /// Parsing errors.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -46,3 +46,5 @@ impl fmt::Display for Error {
 		}
 	}
 }
+
+impl error::Error for Error {}
