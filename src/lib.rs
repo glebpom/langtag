@@ -56,7 +56,8 @@ use std::{
 	ops::{
 		Range,
 		Deref
-	}
+	},
+	str::FromStr
 };
 
 macro_rules! component {
@@ -484,6 +485,14 @@ impl LanguageTagBuf {
 		buffer.resize(bytes.len(), 0);
 		buffer.copy_from_slice(bytes);
 		Self::new(buffer)
+	}
+}
+
+impl FromStr for LanguageTagBuf {
+	type Err = Error;
+
+	fn from_str(s: &str) -> Result<Self, Self::Err> {
+		LanguageTagBuf::parse_copy(s)
 	}
 }
 
